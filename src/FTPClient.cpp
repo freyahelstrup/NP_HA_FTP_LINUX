@@ -29,12 +29,9 @@ void FTPClient::SendMsg(char msg[], int size) {
 char* FTPClient::RecvMsg() {
 	cout << "Received from server:\t";
 
-	int x;
-	char received[1024];
-	x = recv(sock, received, 1024, 0); //recv() returns length of message
-	received[x] = '\0'; //0 indexing
-	cout << received;
-	return received;
+    buffer[recv(sock, buffer, 1024, 0)] = '\0'; //0 indexing
+    cout << buffer;
+	return buffer;
 }
 
 void FTPClient::SaveFile(char filename[]) {
@@ -53,9 +50,7 @@ void FTPClient::SaveFile(char filename[]) {
 	file.close();
 }
 
-/*void FTPClient::CloseCon() {
-	closesocket(sock);
-	WSACleanup();
+void FTPClient::CloseCon() {
+	close(sock);
 	cout << "Closed connection.\n" << endl;
 }
-*/

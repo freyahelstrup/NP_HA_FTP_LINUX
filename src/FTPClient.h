@@ -19,8 +19,9 @@ public:
 	void SendMsg(char msg[], int size);
 	char* RecvMsg();
 	void SaveFile(char filename[]);
-	//void CloseCon();
+	void CloseCon();
 	int sock;
 private:
 	struct sockaddr_in saddr;
+	char buffer[1024];
 };

@@ -11,8 +11,7 @@ int main() {
     //char ip[] = "192.168.43.11";
     char *ip_pointer = ip; //Casting ip-address to a char-pointer
 	FTPClient c, data;
-	int dataPort;
-	int a1, a2, a3, a4, p1, p2;
+	int dataPort,a1,a2,a3,a4,p1,p2;
 
 	//Establishing connection
 	c.Connect(21, ip_pointer);
@@ -26,13 +25,12 @@ int main() {
 	c.SendMsg("PASS s165232@dtu.dk\r\n", 21);
 	c.RecvMsg();
 
-
 	//Entering Passive Mode
-	c.SendMsg("PASV\r\n", 6);
-	scanf(c.RecvMsg(), "227 Entering Passive Mode (%d,%d,%d,%d,%d,%d).\r\n", &a1, &a2, &a3, &a4, &p1, &p2);
+    c.SendMsg("PASV\r\n", 6);
+	sscanf(c.RecvMsg(), "227 Entering Passive Mode (%d,%d,%d,%d,%d,%d).\r\n", &a1, &a2, &a3, &a4, &p1, &p2);
 	dataPort = (p1 * 256) + p2;
 
-	//Opening new data connection to appempt to STOR file in server root dir.
+    //Opening new data connection to attempt to STOR file in server root dir.
 	data.Connect(dataPort, ip_pointer);
 	c.SendMsg("LIST\r\n", 6);
 	c.RecvMsg();
@@ -42,12 +40,12 @@ int main() {
 	
 	c.SendMsg("STOR CMakeLists.txt\r\n", 21);
 	c.RecvMsg();
-	//data.CloseCon();
+	data.CloseCon();
 
 
 	//Entering Passive Mode again
 	c.SendMsg("PASV\r\n", 6);
-	scanf(c.RecvMsg(), "227 Entering Passive Mode (%d,%d,%d,%d,%d,%d).\r\n", &a1, &a2, &a3, &a4, &p1, &p2);
+	sscanf(c.RecvMsg(), "227 Entering Passive Mode (%d,%d,%d,%d,%d,%d).\r\n", &a1, &a2, &a3, &a4, &p1, &p2);
 	dataPort = (p1 * 256) + p2;
 
 	//Opening data connection to RETR 1st file
@@ -56,11 +54,11 @@ int main() {
 	c.RecvMsg();
 	c.RecvMsg();
 	data.SaveFile("file.txt");
-	//data.CloseCon();
+	data.CloseCon();
 
 	//Entering Passive Mode again
 	c.SendMsg("PASV\r\n", 6);
-	scanf(c.RecvMsg(), "227 Entering Passive Mode (%d,%d,%d,%d,%d,%d).\r\n", &a1, &a2, &a3, &a4, &p1, &p2);
+	sscanf(c.RecvMsg(), "227 Entering Passive Mode (%d,%d,%d,%d,%d,%d).\r\n", &a1, &a2, &a3, &a4, &p1, &p2);
 	dataPort = (p1 * 256) + p2;
 
 	//Opening new data connection to CWD and LIST
@@ -72,11 +70,11 @@ int main() {
 	c.RecvMsg();
 	data.RecvMsg();
 	c.RecvMsg();
-	//data.CloseCon();
+	data.CloseCon();
 	
 	//Entering Passive Mode again
 	c.SendMsg("PASV\r\n", 6);
-	scanf(c.RecvMsg(), "227 Entering Passive Mode (%d,%d,%d,%d,%d,%d).\r\n", &a1, &a2, &a3, &a4, &p1, &p2);
+	sscanf(c.RecvMsg(), "227 Entering Passive Mode (%d,%d,%d,%d,%d,%d).\r\n", &a1, &a2, &a3, &a4, &p1, &p2);
 	dataPort = (p1 * 256) + p2;
 
 	//Opening new data connection to RETR 2nd file
@@ -85,9 +83,9 @@ int main() {
 	c.RecvMsg();
 	c.RecvMsg();
 	data.SaveFile("NAT-HOWTO-3.html");
-	//data.CloseCon();
+	data.CloseCon();
 
 	cin.get();
-	//c.CloseCon();
+	c.CloseCon();
 	return 0;
 }
