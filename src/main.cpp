@@ -7,8 +7,8 @@ main.cpp
 using namespace std;
 
 int main() {
-	char ip[] = "130.226.195.126";
-    //char ip[] = "192.168.43.11";
+//	char ip[] = "130.226.195.126";
+    char ip[] = "192.168.43.11";
     char *ip_pointer = ip; //Casting ip-address to a char-pointer
 	FTPClient c, data;
 	int dataPort,a1,a2,a3,a4,p1,p2;
@@ -50,10 +50,10 @@ int main() {
 
 	//Opening data connection to RETR 1st file
 	data.Connect(dataPort, ip_pointer);
-	c.SendMsg("RETR file.txt\r\n", 15); //small file of 12 bytes
+	c.SendMsg("RETR hejtroels.txt\r\n", 15); //small file of 12 bytes
 	c.RecvMsg();
 	c.RecvMsg();
-	data.SaveFile("file.txt");
+	data.SaveFile("hejtroels.txt");
 	data.CloseCon();
 
 	//Entering Passive Mode again
