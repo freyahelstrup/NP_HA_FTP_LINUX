@@ -2,90 +2,97 @@
 main.cpp
 */
 #include <iostream>
+#include <fstream>
 #include "FTPClient.cpp"
 
 using namespace std;
 
 int main() {
-	char ip[] = "130.226.195.126";
-    //char ip[] = "192.168.43.11";
+    //char ip[] = "130.226.195.126";
+    char ip[] = "192.168.43.11";
     char *ip_pointer = ip; //Casting ip-address to a char-pointer
-	FTPClient c, data;
-	int dataPort,a1,a2,a3,a4,p1,p2;
+    FTPClient c, data;
+    int dataPort, a1, a2, a3, a4, p1, p2;
 
-	//Establishing connection
-	c.Connect(21, ip_pointer);
-	c.RecvMsg();
-	c.SendMsg("HELLO\r\n", 7);
-	c.RecvMsg();
+    //Establishing connection
+    c.Connect(21, ip_pointer);
+    c.RecvMsg();
+    c.SendMsg("HELLO\r\n", 7);
+    c.RecvMsg();
 
-	//Logging in
-	c.SendMsg("USER anonymous\r\n", 16);
-	c.RecvMsg();
-	c.SendMsg("PASS s165232@dtu.dk\r\n", 21);
-	c.RecvMsg();
-
-	//Entering Passive Mode
+    //Logging in
+    c.SendMsg("USER anonymous\r\n", 16);
+    c.RecvMsg();
+    c.SendMsg("PASS s165232@dtu.dk\r\n", 21);
+    c.RecvMsg();
+/*
+    //Entering Passive Mode
     c.SendMsg("PASV\r\n", 6);
-	sscanf(c.RecvMsg(), "227 Entering Passive Mode (%d,%d,%d,%d,%d,%d).\r\n", &a1, &a2, &a3, &a4, &p1, &p2);
-	dataPort = (p1 * 256) + p2;
+    sscanf(c.RecvMsg(), "227 Entering Passive Mode (%d,%d,%d,%d,%d,%d).\r\n", &a1, &a2, &a3, &a4, &p1, &p2);
+    dataPort = (p1 * 256) + p2;
 
     //Opening new data connection to attempt to STOR file in server root dir.
-	data.Connect(dataPort, ip_pointer);
-	c.SendMsg("LIST\r\n", 6);
-	c.RecvMsg();
+    data.Connect(dataPort, ip_pointer);
+    c.SendMsg("LIST\r\n", 6);
+    c.RecvMsg();
 
-	data.RecvMsg();
-	c.RecvMsg();
-	
-	c.SendMsg("STOR CMakeLists.txt\r\n", 21);
-	c.RecvMsg();
-	data.CloseCon();
+    data.RecvMsg();
+    c.RecvMsg();
+
+    c.SendMsg("STOR CMakeLists.txt\r\n", 21);
+    c.RecvMsg();
+    data.CloseCon();
 
 
-	//Entering Passive Mode again
-	c.SendMsg("PASV\r\n", 6);
-	sscanf(c.RecvMsg(), "227 Entering Passive Mode (%d,%d,%d,%d,%d,%d).\r\n", &a1, &a2, &a3, &a4, &p1, &p2);
-	dataPort = (p1 * 256) + p2;
+    //Entering Passive Mode again
+    c.SendMsg("PASV\r\n", 6);
+    sscanf(c.RecvMsg(), "227 Entering Passive Mode (%d,%d,%d,%d,%d,%d).\r\n", &a1, &a2, &a3, &a4, &p1, &p2);
+    dataPort = (p1 * 256) + p2;
+*/
+    //Opening data connection to RETR 1st file
+    data.Connect(dataPort, ip_pointer);
+    c.SendMsg("RETR log.csv\r\n", 14); //small file of 12 bytes
+    c.RecvMsg();
+    c.RecvMsg();
+    data.SaveFile("log.csv");
+    data.CloseCon();
 
-	//Opening data connection to RETR 1st file
-	data.Connect(dataPort, ip_pointer);
-	c.SendMsg("RETR file.txt\r\n", 15); //small file of 12 bytes
-	c.RecvMsg();
-	c.RecvMsg();
-	data.SaveFile("file.txt");
-	data.CloseCon();
+    //log.csv download
+    ifstream log;
+    string line;
+    int sensor4max;
+    log.open("../log.csv", ios::in);
 
-	//Entering Passive Mode again
-	c.SendMsg("PASV\r\n", 6);
-	sscanf(c.RecvMsg(), "227 Entering Passive Mode (%d,%d,%d,%d,%d,%d).\r\n", &a1, &a2, &a3, &a4, &p1, &p2);
-	dataPort = (p1 * 256) + p2;
+    if (log.is_open()) {
+        getline(log, line);
+        while (getline(log, line)) {
+            string sensor1, sensor2, sensor3, sensor4, sensor5, sensor6;
 
-	//Opening new data connection to CWD and LIST
-	data.Connect(dataPort, ip_pointer);
-	c.SendMsg("CWD /pub/62501/HOWTOs/NAT-HOWTO\r\n", 33);
-	c.RecvMsg();
-	
-	c.SendMsg("LIST\r\n", 6);
-	c.RecvMsg();
-	data.RecvMsg();
-	c.RecvMsg();
-	data.CloseCon();
-	
-	//Entering Passive Mode again
-	c.SendMsg("PASV\r\n", 6);
-	sscanf(c.RecvMsg(), "227 Entering Passive Mode (%d,%d,%d,%d,%d,%d).\r\n", &a1, &a2, &a3, &a4, &p1, &p2);
-	dataPort = (p1 * 256) + p2;
+            line = line.substr(line.find(",") + 1, line.size());
+            sensor1 = line.substr(0, line.find(","));
+            line = line.substr(line.find(",") + 1, line.size());
+            sensor2 = line.substr(0, line.find(","));
+            line = line.substr(line.find(",") + 1, line.size());
+            sensor3 = line.substr(0, line.find(","));
+            line = line.substr(line.find(",") + 1, line.size());
+            sensor4 = line.substr(0, line.find(","));
+            line = line.substr(line.find(",") + 1, line.size());
+            sensor5 = line.substr(0, line.find(","));
+            line = line.substr(line.find(",") + 1, line.size());
+            sensor6 = line.substr(0, line.find(","));
 
-	//Opening new data connection to RETR 2nd file
-	data.Connect(dataPort, ip_pointer);
-	c.SendMsg("RETR NAT-HOWTO-3.html\r\n", 23);//bigger file of 1359 bytes
-	c.RecvMsg();
-	c.RecvMsg();
-	data.SaveFile("NAT-HOWTO-3.html");
-	data.CloseCon();
+            if (sensor4max < atoi(sensor4.c_str())) {
+                sensor4max = atoi(sensor4.c_str());
+            }
+        }
 
-	cin.get();
-	c.CloseCon();
-	return 0;
+        cout << sensor4max;
+
+    } else {
+        printf("ERROR: File has not been opened.");
+    }
+
+    cin.get();
+    c.CloseCon();
+    return 0;
 }
