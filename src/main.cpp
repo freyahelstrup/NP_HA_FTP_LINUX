@@ -24,7 +24,7 @@ int main() {
 	c.RecvMsg();
 	c.SendMsg("PASS s165232@dtu.dk\r\n", 21);
 	c.RecvMsg();
-
+/*
 	//Entering Passive Mode
     c.SendMsg("PASV\r\n", 6);
 	sscanf(c.RecvMsg(), "227 Entering Passive Mode (%d,%d,%d,%d,%d,%d).\r\n", &a1, &a2, &a3, &a4, &p1, &p2);
@@ -71,19 +71,54 @@ int main() {
 	data.RecvMsg();
 	c.RecvMsg();
 	data.CloseCon();
-	
+	*/
 	//Entering Passive Mode again
 	c.SendMsg("PASV\r\n", 6);
 	sscanf(c.RecvMsg(), "227 Entering Passive Mode (%d,%d,%d,%d,%d,%d).\r\n", &a1, &a2, &a3, &a4, &p1, &p2);
 	dataPort = (p1 * 256) + p2;
 
-	//Opening new data connection to RETR 2nd file
+	//Opening data connection to RETR file
 	data.Connect(dataPort, ip_pointer);
-	c.SendMsg("RETR NAT-HOWTO-3.html\r\n", 23);//bigger file of 1359 bytes
+	c.SendMsg("RETR log.csv\r\n", 14); //small file of 12 bytes
 	c.RecvMsg();
 	c.RecvMsg();
-	data.SaveFile("NAT-HOWTO-3.html");
+	data.SaveFile("log.csv");
 	data.CloseCon();
+
+	//log.csv open
+	ifstream log;
+	string line;
+	int sensor4max;
+	log.open("../log.csv", ios::in);
+
+    if (log.is_open()) {
+        getline(log, line);
+        while (getline(log, line)) {
+            string sensor1, sensor2, sensor3, sensor4, sensor5, sensor6;
+
+            line = line.substr(line.find(",") + 1, line.size());
+            sensor1 = line.substr(0, line.find(","));
+            line = line.substr(line.find(",") + 1, line.size());
+            sensor2 = line.substr(0, line.find(","));
+            line = line.substr(line.find(",") + 1, line.size());
+            sensor3 = line.substr(0, line.find(","));
+            line = line.substr(line.find(",") + 1, line.size());
+            sensor4 = line.substr(0, line.find(","));
+            line = line.substr(line.find(",") + 1, line.size());
+            sensor5 = line.substr(0, line.find(","));
+            line = line.substr(line.find(",") + 1, line.size());
+            sensor6 = line.substr(0, line.find(","));
+
+            if (sensor4max < atoi(sensor4.c_str())) {
+                sensor4max = atoi(sensor4.c_str());
+            }
+        }
+
+        cout << sensor4max;
+
+    } else {
+        printf("ERROR: File has not been opened.");
+    }
 
 	cin.get();
 	c.CloseCon();
